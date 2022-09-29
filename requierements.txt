@@ -1,0 +1,4 @@
+# General
+python-dotenv
+
+# Project specific
