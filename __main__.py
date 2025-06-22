@@ -3,8 +3,7 @@ import os
 import yaml
 import logging
 import logging.config
-from logging.handlers import RotatingFileHandler
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 import argparse
 
 # import.project
@@ -12,18 +11,24 @@ import argparse
 # import.local
 from module_config.class_configLoader import ConfigLoader
 
+# import.local.config
+
+from config.project.logging import get_config as confLoader_logging
+
+
+
 # <CONST>
 CONST_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONST_CONFIG_FOLDER_GLOBAL = os.path.join(CONST_ROOT_DIR, ".\\config\\global.d")
+CONST_CONFIG_FOLDER_GLOBAL = os.path.join(CONST_ROOT_DIR, ".\\config\\project")
 # </CONST>
 
 # <CONFIG>
 globalConfig = ConfigLoader(CONST_CONFIG_FOLDER_GLOBAL)
-load_dotenv(globalConfig.conf_objects["global.yaml"]["credentials"]) # Load Credentials
+
 # </CONFIG>
 
 # <LOGGING>
-logging.config.dictConfig(globalConfig.conf_objects["logging.yaml"])
+logging.config.dictConfig((confLoader_logging(".\\config\\project\\logging.yaml")))
 log = logging.getLogger(__name__)
 # </LOGGING>
 
@@ -50,7 +55,7 @@ import module_api.routes
 import uvicorn
 
 app_api = FastAPI()
-module_api.include_all_routers(app_api, package_name="module_api", package_path=module_api.routes.__path__)
+module_api.include_all_routers(app_api, package_name="module_api", package_path=str(module_api.routes.__path__))
 
 if __name__ == "__main__":
     import uvicorn
@@ -58,9 +63,9 @@ if __name__ == "__main__":
 # </module_api>
 
 # <module_database>
-from module_database.class_databaseConnector import DatabaseConnector
+#from module_database.class_databaseConnector import DatabaseConnector
 
-database = DatabaseConnector()
+#database = DatabaseConnector()
 
 # </module_database>
 
